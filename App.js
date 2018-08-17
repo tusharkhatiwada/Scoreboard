@@ -1,16 +1,50 @@
 import React from "react";
-import { createBottomTabNavigator } from "react-navigation";
+import { createBottomTabNavigator, createStackNavigator } from "react-navigation";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 import Results from "./src/components/Results";
 import NewResult from "./src/components/NewResult";
 import ScoreTable from "./src/components/ScoreTable";
 
+const stackOptions = {
+    headerStyle: {
+        backgroundColor: "tomato"
+    },
+    headerTitleStyle: {
+        color: "white"
+    }
+};
+
+const ResultsStack = createStackNavigator(
+    {
+        Results: Results
+    },
+    {
+        navigationOptions: stackOptions
+    }
+);
+const NewResultStack = createStackNavigator(
+    {
+        NewResult: NewResult
+    },
+    {
+        navigationOptions: stackOptions
+    }
+);
+const ScoreTableStack = createStackNavigator(
+    {
+        ScoreTable: ScoreTable
+    },
+    {
+        navigationOptions: stackOptions
+    }
+);
+
 export default createBottomTabNavigator(
     {
-        Results: Results,
-        NewResult: NewResult,
-        ScoreTable: ScoreTable
+        Results: ResultsStack,
+        NewResult: NewResultStack,
+        ScoreTable: ScoreTableStack
     },
     {
         navigationOptions: ({ navigation }) => ({
@@ -24,7 +58,7 @@ export default createBottomTabNavigator(
                 } else {
                     iconName = `insert-chart`;
                 }
-                return <Icon name={iconName} size={28} color={tintColor} />;
+                return <Icon name={iconName} size={24} color={tintColor} />;
             }
         }),
         tabBarOptions: {
@@ -33,11 +67,10 @@ export default createBottomTabNavigator(
             activeTintColor: "white",
             inactiveTintColor: "#fcfcfc",
             labelStyle: {
-                fontSize: 14
+                fontSize: 13
             },
             style: {
-                backgroundColor: "#f44a2c",
-                height: 58
+                backgroundColor: "#f44a2c"
             }
         }
     }
