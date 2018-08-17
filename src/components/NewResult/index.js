@@ -7,11 +7,14 @@ import {
     TextInput,
     DatePickerAndroid,
     Button,
-    Dimensions
+    Dimensions,
+    ToastAndroid
 } from "react-native";
 import moment from "moment";
+import Realm from "realm";
 
 import { teams } from "../../constants/teams";
+import { ResultSchema } from "../../constants/schemas";
 const { height, width } = Dimensions.get("window");
 
 const today = moment().format("DD/MM/YYYY");
@@ -23,9 +26,10 @@ export default class NewResult extends Component {
     state = {
         firstTeam: null,
         secondTeam: null,
-        firstTeamScore: "0",
-        secondTeamScore: "0",
-        date: today
+        firstTeamScore: null,
+        secondTeamScore: null,
+        date: today,
+        error: false
     };
     handleDateChange = async () => {
         const { date } = this.state;
@@ -44,7 +48,52 @@ export default class NewResult extends Component {
     };
     handleSubmit = () => {
         const { date, firstTeam, firstTeamScore, secondTeam, secondTeamScore } = this.state;
-        alert(`${date}, ${firstTeam}, ${firstTeamScore}, ${secondTeam}, ${secondTeamScore}`);
+        if (date && firstTeam && firstTeamScore && secondTeam && secondTeamScore) {
+            if (firstTeam === secondTeam) {
+                this.setState({
+                    error: true,
+                    message: "Teams must be different"
+                });
+            } else {
+                const score = {
+                    date,
+                    firstTeam,
+                    firstTeamScore,
+                    secondTeam,
+                    secondTeamScore,
+                    draw: firstTeamScore === secondTeamScore ? true : false,
+                    won: firstTeamScore > secondTeamScore ? firstTeam : secondTeam
+                };
+                Realm.open({ schema: [ResultSchema] }).then(realm => {
+                    realm.write(() => {
+                        const scoreDetails = realm.create("Result", {
+                            score: JSON.stringify(score)
+                        });
+                    });
+                    realm.close();
+                });
+                ToastAndroid.showWithGravityAndOffset(
+                    "Result sucessfully created",
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    50
+                );
+                this.setState({
+                    date: today,
+                    firstTeam: null,
+                    secondTeam: null,
+                    firstTeamScore: null,
+                    secondTeamScore: null,
+                    error: false
+                });
+            }
+        } else {
+            this.setState({
+                error: true,
+                message: "All fields are required"
+            });
+        }
     };
     renderTeam = side => {
         const { firstTeam, secondTeam } = this.state;
@@ -65,7 +114,15 @@ export default class NewResult extends Component {
         );
     };
     render() {
-        const { firstTeam, firstTeamScore, secondTeam, secondTeamScore, date } = this.state;
+        const {
+            firstTeam,
+            firstTeamScore,
+            secondTeam,
+            secondTeamScore,
+            date,
+            error,
+            message
+        } = this.state;
         return (
             <View style={styles.container}>
                 <View style={styles.formContainer}>
@@ -107,6 +164,11 @@ export default class NewResult extends Component {
                 <View style={styles.dateContainer}>
                     <Button onPress={this.handleSubmit} title="Submit Result" color="tomato" />
                 </View>
+                {error && (
+                    <View style={styles.errorContainer}>
+                        <Text style={styles.error}>{message}</Text>
+                    </View>
+                )}
             </View>
         );
     }
@@ -151,5 +213,14 @@ const styles = StyleSheet.create({
         width: width / 2,
         marginHorizontal: 10,
         marginBottom: 20
+    },
+    errorContainer: {
+        backgroundColor: "firebrick",
+        padding: 10,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    error: {
+        color: "white"
     }
 });
