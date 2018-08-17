@@ -1,49 +1,44 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+import React from "react";
+import { createBottomTabNavigator } from "react-navigation";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import Results from "./src/components/Results";
+import NewResult from "./src/components/NewResult";
+import ScoreTable from "./src/components/ScoreTable";
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
-
-type Props = {};
-export default class App extends Component<Props> {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-      </View>
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
+export default createBottomTabNavigator(
+    {
+        Results: Results,
+        NewResult: NewResult,
+        ScoreTable: ScoreTable
+    },
+    {
+        navigationOptions: ({ navigation }) => ({
+            tabBarIcon: ({ focused, tintColor }) => {
+                const { routeName } = navigation.state;
+                let iconName;
+                if (routeName === "Results") {
+                    iconName = `format-list-bulleted`;
+                } else if (routeName === "NewResult") {
+                    iconName = `add-circle-outline`;
+                } else {
+                    iconName = `insert-chart`;
+                }
+                return <Icon name={iconName} size={28} color={tintColor} />;
+            }
+        }),
+        tabBarOptions: {
+            activeBackgroundColor: "tomato",
+            inactiveBackgroundColor: "#f44a2c",
+            activeTintColor: "white",
+            inactiveTintColor: "#fcfcfc",
+            labelStyle: {
+                fontSize: 14
+            },
+            style: {
+                backgroundColor: "#f44a2c",
+                height: 58
+            }
+        }
+    }
+);
