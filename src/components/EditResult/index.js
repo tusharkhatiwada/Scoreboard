@@ -21,9 +21,9 @@ const today = moment().format("YYYY/MM/DD");
 
 const rand = Math.floor(Math.random() * 10 + 1);
 
-export default class NewResult extends Component {
+export default class EditResult extends Component {
     static navigationOptions = {
-        title: "NEW RESULT"
+        title: "EDIT RESULT"
     };
     state = {
         firstTeam: null,
@@ -33,6 +33,18 @@ export default class NewResult extends Component {
         date: today,
         error: false
     };
+    componentDidMount() {
+        const { navigation } = this.props;
+        const score = navigation.getParam("score");
+        this.setState({
+            id: score.id,
+            date: score.date,
+            firstTeam: score.firstTeam,
+            secondTeam: score.secondTeam,
+            firstTeamScore: score.firstTeamScore,
+            secondTeamScore: score.secondTeamScore
+        });
+    }
     handleDateChange = async () => {
         const { date } = this.state;
         try {
@@ -49,7 +61,7 @@ export default class NewResult extends Component {
         }
     };
     handleSubmit = () => {
-        const { date, firstTeam, firstTeamScore, secondTeam, secondTeamScore } = this.state;
+        const { id, date, firstTeam, firstTeamScore, secondTeam, secondTeamScore } = this.state;
         if (date && firstTeam && firstTeamScore && secondTeam && secondTeamScore) {
             if (firstTeam === secondTeam) {
                 this.setState({
@@ -57,40 +69,27 @@ export default class NewResult extends Component {
                     message: "Teams must be different"
                 });
             } else {
-                // const score = {
-                //     date,
-                //     firstTeam,
-                //     firstTeamScore,
-                //     secondTeam,
-                //     secondTeamScore,
-                //     draw: firstTeamScore === secondTeamScore ? true : false,
-                //     won: firstTeamScore > secondTeamScore ? firstTeam : secondTeam
-                // };
                 Realm.open({ schema: [ResultSchema] }).then(realm => {
-                    const scores = realm.objects("Result");
-                    const lastId = scores[scores.length - 1];
-                    let id;
-                    if (lastId) {
-                        id = lastId.id + 1;
-                    } else {
-                        id = 1;
-                    }
                     realm.write(() => {
-                        const scoreDetails = realm.create("Result", {
-                            id,
-                            date,
-                            firstTeam,
-                            firstTeamScore,
-                            secondTeam,
-                            secondTeamScore,
-                            draw: firstTeamScore === secondTeamScore ? true : false,
-                            won: firstTeamScore > secondTeamScore ? firstTeam : secondTeam
-                        });
+                        const scoreDetails = realm.create(
+                            "Result",
+                            {
+                                id,
+                                date,
+                                firstTeam,
+                                firstTeamScore,
+                                secondTeam,
+                                secondTeamScore,
+                                draw: firstTeamScore === secondTeamScore ? true : false,
+                                won: firstTeamScore > secondTeamScore ? firstTeam : secondTeam
+                            },
+                            true
+                        );
                     });
                     realm.close();
                 });
                 ToastAndroid.showWithGravityAndOffset(
-                    "Result sucessfully created",
+                    "Result sucessfully updated",
                     ToastAndroid.LONG,
                     ToastAndroid.BOTTOM,
                     25,
@@ -104,6 +103,7 @@ export default class NewResult extends Component {
                     secondTeamScore: null,
                     error: false
                 });
+                this.props.navigation.navigate("Results");
             }
         } else {
             this.setState({

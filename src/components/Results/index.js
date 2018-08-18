@@ -28,7 +28,16 @@ export default class Results extends Component {
             const scores = realm.objects("Result");
             const scoreDetails = [];
             scores.map(score => {
-                scoreDetails.push(JSON.parse(score.score));
+                scoreDetails.push({
+                    id: score.id,
+                    date: score.date,
+                    firstTeam: score.firstTeam,
+                    firstTeamScore: score.firstTeamScore,
+                    secondTeam: score.secondTeam,
+                    secondTeamScore: score.secondTeamScore,
+                    draw: score.draw,
+                    won: score.won
+                });
             });
             const sortedScores = scoreDetails.sort(function(a, b) {
                 return a.date > b.date ? -1 : b.date > a.date ? 1 : 0;
@@ -56,7 +65,7 @@ export default class Results extends Component {
                 <TouchableOpacity
                     key={i}
                     style={styles.list}
-                    onPress={() => alert(JSON.stringify(score))}
+                    onPress={() => this.props.navigation.navigate("EditResult", { score })}
                 >
                     <Text style={styles.date}>{date}</Text>
                     <View style={styles.goals}>
@@ -107,7 +116,13 @@ export default class Results extends Component {
                         refreshControl={this.renderRefreshControl()}
                         contentContainerStyle={styles.score}
                     >
-                        {scores.length > 0 ? this.renderScores() : <Text>No results found</Text>}
+                        {scores.length > 0 ? (
+                            this.renderScores()
+                        ) : (
+                            <Text>
+                                No results found. Swipe down if you have recently added a new result
+                            </Text>
+                        )}
                     </ScrollView>
                 }
             </View>

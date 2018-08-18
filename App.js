@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 
 import Results from "./src/components/Results";
 import NewResult from "./src/components/NewResult";
+import EditResult from "./src/components/EditResult";
 import ScoreTable from "./src/components/ScoreTable";
 
 const stackOptions = {
@@ -17,7 +18,8 @@ const stackOptions = {
 
 const ResultsStack = createStackNavigator(
     {
-        Results: Results
+        Results: Results,
+        EditResult: EditResult
     },
     {
         navigationOptions: stackOptions
