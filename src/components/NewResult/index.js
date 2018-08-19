@@ -84,7 +84,12 @@ export default class NewResult extends Component {
                             secondTeam,
                             secondTeamScore,
                             draw: firstTeamScore === secondTeamScore ? true : false,
-                            won: firstTeamScore > secondTeamScore ? firstTeam : secondTeam
+                            won:
+                                firstTeamScore === secondTeamScore
+                                    ? "draw"
+                                    : firstTeamScore > secondTeamScore
+                                        ? firstTeam
+                                        : secondTeam
                         });
                     });
                     realm.close();

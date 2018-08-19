@@ -13,7 +13,8 @@ const stackOptions = {
     },
     headerTitleStyle: {
         color: "white"
-    }
+    },
+    headerTintColor: "white"
 };
 
 const ResultsStack = createStackNavigator(
