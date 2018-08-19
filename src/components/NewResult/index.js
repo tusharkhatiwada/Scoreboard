@@ -57,15 +57,6 @@ export default class NewResult extends Component {
                     message: "Teams must be different"
                 });
             } else {
-                // const score = {
-                //     date,
-                //     firstTeam,
-                //     firstTeamScore,
-                //     secondTeam,
-                //     secondTeamScore,
-                //     draw: firstTeamScore === secondTeamScore ? true : false,
-                //     won: firstTeamScore > secondTeamScore ? firstTeam : secondTeam
-                // };
                 Realm.open({ schema: [ResultSchema] }).then(realm => {
                     const scores = realm.objects("Result");
                     const lastId = scores[scores.length - 1];

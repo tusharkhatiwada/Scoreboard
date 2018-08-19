@@ -10,7 +10,8 @@ export default class ScoreTable extends Component {
         title: "SCORE TABLE"
     };
     state = {
-        scoreTable: []
+        scoreTable: [],
+        isLoading: false
     };
     componentDidMount() {
         this.fetchScores();
@@ -19,6 +20,11 @@ export default class ScoreTable extends Component {
         Realm.open({ schema: [ResultSchema] }).then(realm => {
             const scores = realm.objects("Result");
             const teamArray = teams.map(team => {
+                team["pld"] = 0;
+                team["win"] = 0;
+                team["lose"] = 0;
+                team["draw"] = 0;
+
                 for (let i = 0; i < scores.length; i++) {
                     let winningTeam = scores[i].won;
                     let draw = scores[i].draw;
@@ -105,6 +111,13 @@ export default class ScoreTable extends Component {
             // alert(JSON.stringify(teamArray));
         });
     };
+    handleRefresh = () => {
+        this.fetchScores();
+    };
+    renderRefreshControl = () => {
+        const { isLoading } = this.state;
+        return <RefreshControl refreshing={isLoading} onRefresh={this.handleRefresh} />;
+    };
     renderScoreTable = () => {
         const { scoreTable } = this.state;
         return scoreTable.map((st, i) => {
@@ -124,18 +137,21 @@ export default class ScoreTable extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <View style={styles.table}>
-                    <View style={styles.tableHeader}>
-                        <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>Pos</Text>
-                        <Text style={[styles.col, { flex: 3, fontWeight: "bold" }]}>Team</Text>
-                        <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>Pld</Text>
-                        <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>W</Text>
-                        <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>D</Text>
-                        <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>L</Text>
-                        <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>Pts</Text>
+                <Text style={styles.info}>Pull down to refresh scores</Text>
+                <ScrollView refreshControl={this.renderRefreshControl()}>
+                    <View style={styles.table}>
+                        <View style={styles.tableHeader}>
+                            <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>Pos</Text>
+                            <Text style={[styles.col, { flex: 3, fontWeight: "bold" }]}>Team</Text>
+                            <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>Pld</Text>
+                            <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>W</Text>
+                            <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>D</Text>
+                            <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>L</Text>
+                            <Text style={[styles.col, { flex: 1, fontWeight: "bold" }]}>Pts</Text>
+                        </View>
+                        {this.renderScoreTable()}
                     </View>
-                    {this.renderScoreTable()}
-                </View>
+                </ScrollView>
             </View>
         );
     }
@@ -146,6 +162,13 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "flex-start",
         alignItems: "stretch"
+    },
+    info: {
+        padding: 10,
+        backgroundColor: "#e7beaaa3",
+        color: "black",
+        marginHorizontal: 20,
+        marginTop: 10
     },
     table: {
         backgroundColor: "white",

@@ -119,7 +119,7 @@ export default class Results extends Component {
                         {scores.length > 0 ? (
                             this.renderScores()
                         ) : (
-                            <Text>
+                            <Text style={styles.info}>
                                 No results found. Swipe down if you have recently added a new result
                             </Text>
                         )}
@@ -136,6 +136,13 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         alignItems: "stretch",
         margin: 10
+    },
+    info: {
+        padding: 10,
+        backgroundColor: "#e7beaaa3",
+        color: "black",
+        marginHorizontal: 20,
+        marginTop: 10
     },
     list: {
         backgroundColor: "white",
