@@ -34,32 +34,35 @@ export default class EditResult extends Component {
         error: false
     };
     componentDidMount() {
-        const { navigation } = this.props;
-        const score = navigation.getParam("score");
-        this.setState({
-            id: score.id,
-            date: score.date,
-            firstTeam: score.firstTeam,
-            secondTeam: score.secondTeam,
-            firstTeamScore: score.firstTeamScore,
-            secondTeamScore: score.secondTeamScore
-        });
+      const { navigation } = this.props;
+      const score = navigation.getParam("score");
+      this.setState({
+          id: score.id,
+          date: score.date,
+          firstTeam: score.firstTeam,
+          secondTeam: score.secondTeam,
+          firstTeamScore: score.firstTeamScore,
+          secondTeamScore: score.secondTeamScore
+      });
     }
     handleDateChange = async () => {
-        const { date } = this.state;
-        try {
-            const { action, year, month, day } = await DatePickerAndroid.open({
-                date: new Date(date)
-            });
-            if (action !== DatePickerAndroid.dismissedAction) {
-                this.setState({
-                    date: moment(`${year}-${month + 1}-${day}`, "YYYY-M-D").format("YYYY/MM/DD")
-                });
-            }
-        } catch ({ code, message }) {
-            console.warn("Cannot open date picker", message);
-        }
+      const { date } = this.state;
+      try {
+          const { action, year, month, day } = await DatePickerAndroid.open({
+              date: new Date(date)
+          });
+          if (action !== DatePickerAndroid.dismissedAction) {
+              this.setState({
+                  date: moment(`${year}-${month + 1}-${day}`, "YYYY-M-D").format("YYYY/MM/DD")
+              });
+          }
+      } catch ({ code, message }) {
+          console.warn("Cannot open date picker", message);
+      }
     };
+
+    handleText = (text) => this.setState({ secondTeamScore: text })
+    
     handleSubmit = () => {
         const { id, date, firstTeam, firstTeamScore, secondTeam, secondTeamScore } = this.state;
         if (date && firstTeam && firstTeamScore && secondTeam && secondTeamScore) {
@@ -167,7 +170,7 @@ export default class EditResult extends Component {
                             <Text style={styles.label}>SCORE</Text>
                             <TextInput
                                 value={secondTeamScore}
-                                onChangeText={text => this.setState({ secondTeamScore: text })}
+                                onChangeText={text => handleText(text)}
                                 keyboardType="numeric"
                                 style={styles.textBox}
                             />
