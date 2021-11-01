@@ -47,6 +47,7 @@ export default class Results extends Component {
         });
     };
     handleRefresh = () => {
+        console.log('handle refresh')
         this.fetchScores();
     };
     renderScores = () => {
